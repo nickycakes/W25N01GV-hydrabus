@@ -24,8 +24,12 @@ settings = {
 	# affects how long it takes to read from chip to hydrabus
 	# try reducing if getting bad data 
 	"spi_speed" : 7,
-	"page_size" : 2048,
-	"num_pages" : 65536,
+
+	# number of bytes to read from the chip at a time
+	# max 4096 (hydrabus buffer size)
+	# does not need to be the actual page size of the chip
+	"page_size" : 4096,
+	"num_pages" : 32768,
 }
 
 
@@ -96,15 +100,11 @@ def dump_continuous(hb, filename):
 	#loop through reads from the chip and write data to file
 	with open(filename,"wb") as dumpfile:
 		for page_num in range(0,settings["num_pages"]):
-			dumpfile.write(hb.read(settings["page_size"],drive_cs=1))
+			dumpfile.write(hb.write_read(read_len=settings["page_size"],drive_cs=1))
 			logger.info("Dumped page " + str(page_num))
 
 	#set cs high when finished
 	hb.cs = 1
-
-
-
-
 
 if __name__ == '__main__':
 
@@ -116,5 +116,3 @@ if __name__ == '__main__':
 	hb = hb_setup()
 	set_continuous_mode(hb)
 	dump_continuous(hb,sys.argv[1])
-
-
