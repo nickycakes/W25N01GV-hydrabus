@@ -5,6 +5,8 @@
 import pyHydrabus
 import coloredlogs, logging
 import sys
+import time
+from datetime import timedelta
 
 logger = logging.getLogger("dump-flash")
 coloredlogs.install(level='INFO')
@@ -99,9 +101,17 @@ def dump_continuous(hb, filename):
 
 	#loop through reads from the chip and write data to file
 	with open(filename,"wb") as dumpfile:
+
+		start_time = time.monotonic()
+
 		for page_num in range(0,settings["num_pages"]):
 			dumpfile.write(hb.write_read(read_len=settings["page_size"],drive_cs=1))
 			logger.info("Dumped page " + str(page_num))
+
+		elapsed_time = time.monotonic() - start_time
+		data_size = settings["num_pages"] * settings["page_size"]
+		transfer_rate = data_size / elapsed_time
+		logger.info(str(data_size) + "B in " + str(timedelta(seconds=elapsed_time)) + " ("+ str(round(transfer_rate)) + "B/s)")
 
 	#set cs high when finished
 	hb.cs = 1
