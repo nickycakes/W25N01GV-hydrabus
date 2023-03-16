@@ -15,11 +15,17 @@ pip3 install -r requirements.txt
 
 ```bash
 # dumps entire flash
-./dumpflash.py fulldump.bin
+./dump-flash.py fulldump.bin
 ```
 
+```bash
+# write entire flash with image.bin
+./write-flash.py image.bin
+```
 
 ## Notes
 
-* Make sure all leads are connected properly, especially HOLD to 3.3v
+* Make sure all leads are connected properly, 
+  * especially HOLD to 3.3v
+  * under default settings, write protect pin should not matter for writing
 * This script is unlikely to work for other nand flash without heavy modification
